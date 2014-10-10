@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Efeitos</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="physics.js"></script>
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="collision.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="chuva.js"></script>
+
+
+        <script type="text/javascript">
+            window.onload = function(){
+                var canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                Engine.init('canvas', 400, 300);
+                SceneGraph.root.add(new Rain(Engine.canvas.width, Engine.canvas.height, 'lightblue', 100));
+                Engine.run();
+            }
+            
+            
+        function updateRain(){
+            var rain =   SceneGraph.root.children[0].obj
+            rain.m[4] = parseInt($('posx').value,10);
+            rain.m[5] = parseInt($('posy').value,10);
+            rain.maxdrops = parseInt($('quantidade').value,10);
+            rain.maxHeight = parseInt($('rainh').value,10);
+            rain.maxWidth = parseInt($('rainw').value,10);
+            rain.wind = parseInt($('vento').value,10);
+            rain.speed = parseInt($('velocidade').value,10);
+            rain.dropWidth = parseInt($('dropw').value,10);
+            rain.dropHeight = parseInt($('droph').value,10);
+            rain.color = $('dropcolor').value;
+            
+            rain.createDrops(); /* recriar as gotas, pois a quantidade, altura ou larguram podem ter mudado*/
+            
+            var s = "/*largura nuvem, altura nuvem, cor da chuva, quantidade de gotas*/\nvar rainObj = new Rain("+Engine.canvas.width+", "+Engine.canvas.height+", '"+rain.color+"', "+rain.maxdrops+");";
+            var t = "SceneGraph.root.add(rainObj);\n";
+            if(rain.m[4] != 0)
+                t+= "rainObj.m[4] = "+ rain.m[4]+";/*default=0*/\n";
+            if(rain.m[5] != 0)
+                t+= "rainObj.m[5] = "+ rain.m[5]+";/*default=0*/\n";
+            if(rain.wind!=0)
+                t+= "rainObj.wind = "+rain.wind+"; /* default=0*/\n";
+            if(rain.speed!=4)
+                t+= "rainObj.speed = "+rain.speed +"; /*default=4*/\n";
+            if(rain.dropWidth!=2)
+                t+= "rainObj.dropWidth = "+rain.dropWidth+"; /*default=2*/\n";
+            if(rain.dropHeight!=4)
+                t+= "rainObj.dropHeight = "+rain.dropHeight+";/*default=4*/\n";
+            
+            $('declaration').innerText = s;
+            $('code').innerText = t;
+        }
+        </script>
+
+        <style type="text/css">
+            ul.text input{
+                width:60px;
+            }
+
+            input{
+                cursor:pointer;
+            }
+
+            .textarea{font-family:"Courier New", Courier, monospace}
+
+
+            #canvas{
+                background-image: url("chuva.jpg")
+            }
+        </style>
+<img src="logo.png" onclick="window.close()">
+    </head>
+
+    <body>
+
+        <div>
+
+            <fieldset>
+
+                <ul style="text-align:left; width:190px;float:left" class="text">
+                    <li> 
+                        <div>Chuva:</div>
+                        <ul>
+                            <li> <input type="text" value="100" id="quantidade" onchange="updateRain()"><span>Gotas</span></li>
+                            <li> <input type="text" id="rainh" value="300" onchange="updateRain()"><span>Altura</span></li>
+                            <li> <input type="text" id="rainw" value="400" onchange="updateRain()"><span>Largura</span></li>
+                            <li> <input type="text" id="vento" value="0" onchange="updateRain()"><span>Vento(+ ou -)</span> </li>
+
+                        </ul>
+                    </li>	
+                </ul>
+
+
+                <ul style="text-align:left; width:180px;float:left" class="text">
+
+                    <li style="list-style: none"> 
+                        <div>&nbsp;</div>
+                        <ul>
+                            <li> <input type="text" value="4" id="velocidade" onchange="updateRain()"><span>Velocidade</span></li>
+                            <li> <input type="text" value="0" id="posx" onchange="updateRain()"><span>Pos X</span></li>
+                            <li> <input type="text" value="0" id="posy" onchange="updateRain()"><span>Pos Y</span></li>
+                        </ul>
+                    </li>
+                </ul>
+
+
+                <ul style="text-align:left; width:190px;float:left" class="text">
+
+                    <li><div>Gotas:</div>
+                        <ul>
+
+
+                            <li> <input type="text" id="droph" value="4" onchange="updateRain()"><span>Altura</span></li>
+                            <li> <input type="text" id="dropw" value="2" onchange="updateRain()"><span>Largura</span></li>
+                            <li> <input type="text" id="dropcolor" value="lightblue" onchange="updateRain()"><span>Cor</span> </li>
+                        </ul>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+        <canvas  style="background-color: white; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="2" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="13" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>
+

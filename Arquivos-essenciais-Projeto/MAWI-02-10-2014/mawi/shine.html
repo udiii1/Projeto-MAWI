@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Brilho/Estrelas</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="shine.js"></script>
+        <script type="text/javascript">
+            /* Ao carregar a página, inicia montagem do objeto*/
+            window.onload = function(){
+                var perimeter = parseInt($('perimeter').value);
+                var radius = parseInt($('maxRadius').value);
+                var qtd =  parseInt($('qtdStars').value);;
+                var speed = parseFloat($('speed').value);
+                canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                
+                var exp  = new Shine(0,0, perimeter, radius, qtd, speed); 
+                exp.m =  [1, 0, 0, 1, canvas.width*0.5, canvas.height*0.5];
+                SceneGraph.root.add(exp);    
+                Engine.init('canvas', canvas.width, canvas.height); 
+                Engine.run(); 
+				
+				updateStars();/*escrever código na tela*/
+            }
+			
+			
+            function updateStars(){
+                var perimeter = parseInt($('perimeter').value);
+                var radius = parseInt($('maxRadius').value);
+                var qtd =  parseInt($('qtdStars').value);;
+                var speed = parseFloat($('speed').value);
+                var escala = parseInt($('escala').value);
+				var c1 = $('cor1').value;
+				var c2 = $('cor2').value;
+
+                var exp = SceneGraph.root.children[0].obj;
+                exp.m[0] = exp.m[3] = escala;
+                exp.perimeter = perimeter;
+                exp.maxRadius = radius;
+                exp.speed = speed;
+                exp.colors = [c1,c2];
+				exp.generate(qtd);
+				
+				
+                $('declaration').innerText = 
+                    "var shiningObj = new Shine(0,0, "+ exp.perimeter +", "+ exp.maxRadius +", "+ qtd +", "+ exp.speed +");" ;
+
+				SceneGraph.root.add(exp);    
+                Engine.init('canvas', canvas.width, canvas.height); 
+                Engine.run(); 
+					
+                $('code').innerText = 
+                    "shiningObj.m =  ["+ escala  +", 0, 0, "+ escala +", "+  exp.m[4] +", "+  exp.m[5]  +"];\n"+
+                    "/*Adiciona objeto ao nó do grafo de cena, se desejar adicione à outro n[o qualquer*/\n"+
+					"SceneGraph.root.add(shiningObj);\n"+
+					"/*Se desejado mudar cores*/\n"+
+					"shiningObj.colors = [\'"+c1+"\',\'"+c2+"\'];"+
+					"shiningObj.generate("+ qtd +");";
+            }
+        </script>
+
+        <style type="text/css">
+            li input, li select{
+                width:40px;
+            }
+			.cor{
+			width:100px;
+			}
+			
+        </style>
+<img src="logo.png" onclick="window.close()">
+    </head>
+
+    <body>
+
+        <div><fieldset>
+                <ul style="text-align:left; width:150px">
+                    <li> <input type="text" onchange="updateStars()" value="400" id="perimeter" ><span> - Perímetro</span></li>
+                    <li> <input type="text" onchange="updateStars()" id="maxRadius" value="15" ><span> - Raio Máximo</span></li>
+                    <li> <input type="text" onchange="updateStars()" id="qtdStars" value="100" ><span> - Qtd Estrelas</span></li>
+                    <li> <input type="text" onchange="updateStars()" id="speed" value="0.3"><span> - Velocidade</span></li>
+                    <li> <select id="escala" onchange="updateStars()">
+                            <option value="1" selected>1x</option>
+                            <option value="2">2x</option>
+                            <option value="3">3x</option>
+                            <option value="4">4x</option>
+                            <option value="8">8x</option>
+                            <option value="10">10x</option>
+                            <option value="20">20x</option>
+                        </select><span> - Escala</span>
+                    </li>
+                </ul>
+				<ul>
+                <li><input id="cor1" class="cor" onchange="updateStars()" type="text" value="#99FFFF"><span> - Cor 1</span></li>
+				<li><input id="cor2" class="cor" onchange="updateStars()" type="text" value="#FFFFCC"><span> - Cor 2</span></li>
+				</ul>
+            </fieldset>
+        </div>
+        <canvas  style="background-color: black; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="1" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="13" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>

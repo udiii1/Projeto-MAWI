@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <meta charset="UTF-8" >
+        <title></title>
+
+        <script type="text/javascript" src="mawi/engine.js"></script>
+        <script type="text/javascript" src="mawi/physics.js"></script>
+        <script type="text/javascript" src="mawi/core.js"></script>
+        <script type="text/javascript" src="mawi/collision.js"></script>
+        <script type="text/javascript" src="mawi/scenegraph.js"></script>
+        <script type="text/javascript" src="mawi/net.js"></script>
+		
+		<script>
+		
+		var sprite = new Image();
+		sprite.src = "Luigi-Sprites.png";
+		
+		
+		function ator(){
+			this.width = 44;
+			this.height = 28;
+			this.animation = null;
+			this.render = function(ctx){
+				this.animation.run(ctx, this);
+			};
+			this.left = 1;
+		}
+		ator.prototype = new Drawable(); /* desenhável */
+		
+		
+		function animacao(){
+			this.frames = [sprite, [10, 20, 30, 40], [0,1,2,3,4]];
+			this.len = 4;
+			this.height = 28; 
+			this.width = 44;
+		};
+		animacao.prototype = new CAnimation();
+		
+		function parado(){
+			this.frames = [sprite, [100], [0]];
+			this.len = 1;
+			this.height = 28; 
+			this.width = 44;
+		};
+		parado.prototype = new CAnimation();
+		
+		function handleKeyDown(event) {
+			obj.animation = new parado();
+		}
+
+		
+		var obj;
+		window.onload = function(){
+			Engine.init('myCanvas', innerWidth*0.50, innerHeight*0.50); 
+			obj = new ator();
+			obj.animation = new animacao();
+			SceneGraph.root.add( obj );
+			
+			 window.onkeydown = function(event){
+				handleKeyDown(event);
+			}
+			
+			Engine.run();
+		}
+		
+		
+		
+		
+		</script>
+		
+		
+		
+		
+    </head>
+    <body>
+        <span id="fps" style="position:absolute; font-size:60">FPS</span>
+    <canvas id="myCanvas" class="sky" style="border: 2px solid black;"></canvas>
+</body>
+</html>

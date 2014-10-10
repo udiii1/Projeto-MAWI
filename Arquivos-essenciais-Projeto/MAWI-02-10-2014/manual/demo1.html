@@ -1,0 +1,40 @@
+<html>
+	<head>
+    <title>Demo1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../mawi/engine.js"></script> 
+    <script type="text/javascript" src="../mawi/core.js"></script>
+	<script type="text/javascript" src="../mawi/physics.js"></script>
+	<script type="text/javascript" src="../mawi/net.js"></script>
+    <script type="text/javascript" src="../mawi/scenegraph.js"></script>
+
+    <script type="text/javascript">
+		window.onload = function(){
+			Engine.init('canvasId', innerWidth*0.50, innerHeight*0.50); 
+			var piso1 = new Bloco();
+			piso1.m= [1,0,0,1,30,  175];
+			piso1.height= 30;
+			piso1.width= 30;
+
+			var piso2 = new Bloco();
+			piso2.m = [1,0,0,1, 250, 100];
+			piso2.height= 30;
+			piso2.width = 120;
+			
+			var noPrincipal =  SceneGraph.root.add(piso1);
+			noPrincipal.add( piso2 );
+			Engine.run();
+		}
+	</script>
+
+    <style type="text/css">
+		#canvasId{
+			background-color: black;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+    <body>
+        <canvas id="canvasId"></canvas>
+    </body>
+</html>

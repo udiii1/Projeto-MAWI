@@ -1,0 +1,58 @@
+<html>
+	<head>
+    <title>Demo1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../mawi/engine.js"></script> 
+    <script type="text/javascript" src="../mawi/core.js"></script>
+	<script type="text/javascript" src="../mawi/physics.js"></script>
+	<script type="text/javascript" src="../mawi/net.js"></script>
+    <script type="text/javascript" src="../mawi/scenegraph.js"></script>
+
+    <script type="text/javascript">
+	
+	var sol = {
+    step: 0.1,
+    frame: 0,
+    limit: 0.6,
+    m :  [1,0,0,1,150,0],
+    height: 60,
+    width: 60,
+	render: function(ctx){
+		ctx.save();
+	     ctx.shadowColor = "yellow";
+     		ctx.shadowOffsetX = 0;
+	     ctx.shadowOffsetY = 5;
+     		ctx.shadowBlur = 20;
+	     ctx.beginPath();
+	     ctx.arc(sol.m[4], 0 , sol.width + sol.frame, 0, 2 * Math.PI, false);
+     		if(sol.frame == sol.limit || sol.frame == sol.limit*-1){
+        		sol.step = sol.step*-1;
+	    }
+    		sol.frame += sol.step;
+	    ctx.fillStyle = "yellow";
+	    ctx.fill();
+	    ctx.lineWidth = 3;
+	    ctx.strokeStyle = "orange";
+	    ctx.stroke();
+	    ctx.restore();
+	}
+	};
+	
+	
+		window.onload = function(){
+			Engine.init('canvasId', innerWidth*0.50, innerHeight*0.50); 
+			SceneGraph.root.add(sol);
+			Engine.run();
+		}
+	</script>
+
+    <style type="text/css">
+		#canvasId{
+			background-color: #87CEEB;
+        }
+    </style>
+</head>
+    <body>
+        <canvas id="canvasId"></canvas>
+    </body>
+</html>

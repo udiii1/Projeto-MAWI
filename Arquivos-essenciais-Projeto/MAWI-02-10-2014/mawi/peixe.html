@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Peixe</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="physics.js"></script>
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="collision.js"></script>
+		<script type="text/javascript" src="net.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="peixe.js"></script>
+
+
+        <script type="text/javascript">
+		var fish;
+            window.onload = function(){
+                var canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                Engine.init('canvas', 400, 300);
+				var x = 200 - $('escala').value*30;
+				var y = 150 - $('escala').value*20;
+				
+				$('posx').value = x;
+				$('posy').value = y;
+				
+				fish = SceneGraph.root.add(new Fish(x, y, $('escala').value, $('color1').value, $('color2').value, $('velocidade').value));
+                Engine.run();
+				
+				update();
+            }
+            
+            
+        function update(){
+			fish.obj.m[0] = fish.obj.m[3] = $('escala').value;
+			fish.obj.color1 = $('color1').value;
+			fish.obj.color2 = $('color2').value;
+			fish.obj.m[4] = $('posx').value;
+			fish.obj.m[5] = $('posy').value;
+			fish.obj.speed = $('velocidade').value;
+			
+			
+            var s = "/* Posição X, Posição Y, Escala, Cor inicial, cor final, velocidade */\n" 
+			+ "var fishObj = new Fish(" + $('posx').value + ", " + $('posy').value + ", '" + $('escala').value+"', " + $('color1').value+', ' + $('color2').value+', '+$('velocidade').value+");";
+			var t = "SceneGraph.root.add(fishObj);\n\n";
+            
+			t+="/*\n"+
+			"// Caso seja desejado setar os atributos individualmente: \n"+
+			"//escala\n"+
+			"fish.obj.m[0] = fish.obj.m[3] = " +  $('escala').value + ";\n"+
+			"//cor inicial\n"+
+			"fish.obj.color1 = '" + $('color1').value + "';\n"+
+			"//cor final\n"+
+			"fish.obj.color2 = '" + $('color2').value + "';\n"+
+			"//posicao x\n"+
+			"fish.obj.m[4] = " + $('posx').value + ";\n"+
+			"//posicao y\n"+
+			"fish.obj.m[5] = " + $('posy').value + ";\n"+
+			"//velocidade do nado\n"+
+			"fish.obj.speed = " + $('velocidade').value + ";\n"+
+			"*/";
+						
+            $('declaration').innerText = s;
+            $('code').innerText = t;
+        }
+        </script>
+
+        <style type="text/css">
+            ul.text input{
+                width:60px;
+            }
+            input{
+                cursor:pointer;
+            }
+            .textarea{font-family:"Courier New", Courier, monospace}
+        </style>
+<img src="logo.png" onclick="window.close()">
+    </head>
+
+    <body>
+
+        <div>
+
+            <fieldset>
+
+                <ul style="text-align:left; width:190px;float:left" class="text">
+                    <li> 
+                        <ul>
+                            <li> <input type="text" id="escala" value="1" onchange="update()"><span>Escala</span></li>
+							<li> <input type="text" value="4" id="rotacao" onchange="update()"><span>Rotacao</span></li>
+                            <li> <input type="text" value="200" id="posx" onchange="update()"><span>Pos X</span></li>
+                            <li> <input type="text" value="150" id="posy" onchange="update()"><span>Pos Y</span></li>
+                        </ul>
+                    </li>	
+                </ul>
+                <ul style="text-align:left; width:190px;float:left" class="text">
+                    <li>
+                        <ul>
+                            <li> <input type="text" id="velocidade" value="0.1" onchange="update()"><span>Velocidade</span></li>
+                            <li> <input type="text" id="color1" value="red" onchange="update()"><span>Cor Inicial</span> </li>
+							<li> <input type="text" id="color2" value="yellow" onchange="update()"><span>Cor Final</span> </li>
+                        </ul>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+        <canvas  style="background-color: lightblue; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="2" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="13" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>
+

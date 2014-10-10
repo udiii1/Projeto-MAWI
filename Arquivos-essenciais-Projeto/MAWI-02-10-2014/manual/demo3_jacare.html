@@ -1,0 +1,74 @@
+<html>
+	<head>
+    <title>Demo1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="../mawi/engine.js"></script> 
+    <script type="text/javascript" src="../mawi/core.js"></script>
+	<script type="text/javascript" src="../mawi/physics.js"></script>
+	<script type="text/javascript" src="../mawi/net.js"></script>
+    <script type="text/javascript" src="../mawi/scenegraph.js"></script>
+
+    <script type="text/javascript">
+	
+var j1 = new Image();
+j1.src = 'j1.png';
+
+	
+	var alligator = {
+    animation: null, /* animação corrente sendo executada */
+    body: new CPhysBody(),
+    /* a Função de renderização manda rodar a nimação corrente. Esta por sua vez será a encarregada de desenhar o frame correto */
+    render : function(ctx){
+        this.animation.run(ctx, this)
+    },
+    /* direção que o jogador está tentando dar ao personagem (ajuda a definir a imagem ou seu espelho) */
+    left:0,
+    right:0
+};
+alligator.prototype = new Drawable(); /* desenhável */
+alligator.m = [1,0,0,1,100,0];
+
+
+function ParadoAnim()
+{
+    this.name = "parado"
+};
+ParadoAnim.prototype = new CAnimation();
+alligator.animation = new ParadoAnim();
+alligator.animation.width = 226; /* largura do trecho de sprite */
+alligator.animation.height = 240; /* altura do trecho de sprite */
+alligator.animation.horizontalSprites = false;
+alligator.animation.frames = [j1, 
+    [10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190],
+    [0,1,2,1,0,1,2,1,0,1,2,1,3,4,3,0,3,4,3] //frame sequence (Y)
+    ];
+
+alligator.animation.topOffset = 10;
+alligator.animation.leftOffset = 4* alligator.animation.width + 40;
+alligator.animation.len = 19;
+alligator.animation.translate = [0,20];
+
+
+window.onload = function(){
+			Engine.init('canvasId', innerWidth*0.50, innerHeight*0.50); 
+			SceneGraph.root.add(alligator);
+			
+			window.onclick = function(event){
+				alligator.left = !alligator.left;
+			}
+			
+			Engine.run();
+		}
+	
+	</script>
+
+    <style type="text/css">
+		#canvasId{
+			background-color: #87CEEB;
+        }
+    </style>
+</head>
+    <body><div>Clique para Mudar a propriedade LEFT do ator animado</div>
+        <canvas id="canvasId"></canvas>
+    </body>
+</html>

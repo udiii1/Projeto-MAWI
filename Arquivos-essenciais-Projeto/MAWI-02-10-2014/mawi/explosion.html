@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Explosão</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="physics.js"></script>
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="collision.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="explosion.js"></script>
+        <script type="text/javascript">
+            /* Ao carregar a página, inicia montagem do objeto explosão*/
+            window.onload = function(){
+                perimeter = parseInt($('perimeter').value);
+                var radius = parseFloat($('maxRadius').value);
+                var qtd =  parseInt($('qtdBubbles').value);
+                var speed = parseFloat($('speed').value);
+                canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                
+                var exp  = new Explosion(0,0, perimeter, radius, qtd, speed); 
+                exp.m =  [3, 0, 0, 3, canvas.width*0.5, canvas.height*0.5];
+                SceneGraph.root.add(exp);    
+                Engine.init('canvas', 400, 300); 
+                Engine.run(); 
+            }
+			
+            function updateExplosion(){
+                var radius = parseFloat($('maxRadius').value);
+                var qtd =  parseInt($('qtdBubbles').value);
+                var speed = parseFloat($('speed').value);
+                perimeter = parseInt($('perimeter').value);
+                escala = parseInt($('escala').value);
+		
+
+                var exp = SceneGraph.root.children[0].obj;
+                exp.m[0] = exp.m[3] = escala;
+                exp.perimeter = perimeter;
+                exp.maxRadius = radius;
+                exp.speed = speed;
+                exp.generate(qtd);
+				
+                $('declaration').innerText = 
+                    "var explosionObj = new Explosion(0,0, "+exp.perimeter+", "+exp.maxRadius+", "+qtd+", "+exp.speed+");" ;
+                $('code').innerText = 
+                    "explosionObj.m =  [3, 0, 0, 3, "+  exp.m[4] +", "+  exp.m[5]  +"];\n"+
+                    "SceneGraph.root.add(explosionObj);";
+            }
+        </script>
+
+        <style type="text/css">
+            li input, li select{
+                width:40px;
+            }
+        </style>
+<img src="logo.png" onclick="window.close()">
+    </head>
+
+    <body>
+
+        <div><fieldset>
+                <ul style="text-align:left; width:150px">
+                    <li> <input type="text" value="10" id="perimeter" ><span> Perímetro:</span></li>
+                    <li> <input type="text" id="maxRadius" value="20" ><span> Raio Máximo:</span></li>
+                    <li> <input type="text" id="qtdBubbles" value="15" ><span> Qtd Bolhas:</span></li>
+                    <li> <input type="text" id="speed" value="0.06"><span> Velocidade:</span></li>
+                    <li> <select id="escala" >
+                            <option value="1">1x</option>
+                            <option value="2">2x</option>
+                            <option value="3" selected>3x</option>
+                            <option value="4">4x</option>
+                            <option value="8">8x</option>
+                            <option value="10">10x</option>
+                            <option value="20">20x</option>
+                        </select><span> Escala:</span>
+                    </li>
+                </ul>
+                <input type="button" value=" Atualizar " onclick="updateExplosion()">
+            </fieldset>
+        </div>
+        <canvas  style="background-color: black; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="1" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="13" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Efeitos</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="physics.js"></script>
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="collision.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="smoke.js"></script>
+        <script type="text/javascript" src="smokeCloud.js"></script>
+
+
+        <script type="text/javascript">
+            window.onload = function(){
+                var canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                Engine.init('canvas', 400, 300);
+                var branco = new Smoke();
+                var prata = new Smoke();
+                var black = new Smoke();
+                SceneGraph.root.add(branco);
+                SceneGraph.root.add(prata);
+                SceneGraph.root.add(black);
+                updateCloud();
+                Engine.run();
+            }
+
+            
+            function updateCloud(){
+            
+                var cloud =   SceneGraph.root.children[0].obj
+                var cloud2 =   SceneGraph.root.children[1].obj
+                var cloud3 =   SceneGraph.root.children[2].obj
+                SceneGraph.root.obj.m[4] = parseInt($('posx').value,10);
+                SceneGraph.root.obj.m[5] = parseInt($('posy').value,10);
+                
+                var angulo  = parseFloat($('rotacao').value) * (Math.PI/180);
+                
+                SceneGraph.root.obj.m[0] = SceneGraph.root.obj.m[3] = Math.cos(angulo) * parseFloat($('escala').value);
+                SceneGraph.root.obj.m[2] = Math.sin(angulo)* parseFloat($('escala').value);
+                SceneGraph.root.obj.m[1] = -Math.sin(angulo)* parseFloat($('escala').value);
+
+                if($('tipo').checked){
+                    $('fogcolor').value = 'rgb(190,190,190)';
+                    $('fogcolor2').value = 'rgb(170,170,170)';
+                    $('fogcolor3').value = 'rgb(60,60,60)';
+                }
+                else if($('tipo2').checked){
+                    $('fogcolor').value = 'orange';
+                    $('fogcolor2').value = 'darkorange';
+                    $('fogcolor3').value = 'red';
+                }
+                else if($('tipo3').checked){
+                    $('fogcolor').value = 'white';
+                    $('fogcolor2').value = 'whitesmoke';
+                    $('fogcolor3').value = 'rgb(230,230,230)';
+                }
+
+
+                cloud.maxfogs = parseInt($('quantidade').value,10);
+                cloud.maxHeight = parseInt($('altura').value,10);
+                cloud.maxWidth = parseInt($('largura').value,10);
+                cloud.disp = parseFloat($('dispersao').value);
+                cloud.speed = parseInt($('velocidade').value,10);
+                cloud.color = $('fogcolor').value;
+            
+                cloud2.maxfogs = Math.round(cloud.maxfogs/3);
+                cloud2.maxHeight = cloud.maxHeight;
+                cloud2.maxWidth = cloud.maxWidth;
+                cloud2.disp = cloud.disp;
+                cloud2.speed = cloud.speed-1;
+                cloud2.m[0] = cloud2.m[3] = 0.5;
+                cloud2.m[5] = cloud.maxHeight*0.5;
+                cloud2.color = $('fogcolor2').value;
+        
+                cloud3.maxfogs = 5;
+                cloud3.maxHeight = cloud.maxHeight*0.35;
+                cloud3.maxWidth = cloud.maxWidth;
+                cloud3.disp = cloud.disp;
+                cloud3.speed = cloud.speed-1;
+                cloud3.m[0] = 0.15;
+                cloud3.m[3] = 0.5;
+                cloud3.m[5] = cloud.maxHeight - cloud.maxHeight*0.35*0.5;
+                cloud3.color = $('fogcolor3').value;
+        
+                cloud.shadow = cloud2.shadow = cloud3.shadow = $('shadow').checked;
+            
+                cloud.createFogs(); 
+                cloud2.createFogs(); 
+                cloud3.createFogs(); 
+            
+                var s = "/*largura base, altura nuvem, cor, quantidade de pedaços*/\n"+
+                    "var smokeObj1 = new Smoke("+ cloud.maxWidth +", "+cloud.maxHeight+", '"+cloud.color+"', "+cloud.maxfogs+");\n"+
+                    "var smokeObj2 = new Smoke("+ cloud2.maxWidth +", "+cloud2.maxHeight+", '"+cloud2.color+"', "+cloud2.maxfogs+");\n"+
+                    "var smokeObj3 = new Smoke("+ cloud3.maxWidth +", "+cloud3.maxHeight+", '"+cloud3.color+"', "+cloud3.maxfogs+");\n";
+            
+                var t = "/* nó onde serão penduradas as 3 partes da fumaça */\nvar smokeNode = new DummyNode();\n"+
+                    "smokeNode.m = ["+SceneGraph.root.obj.m[0]+","+SceneGraph.root.obj.m[1]+","+SceneGraph.root.obj.m[2]+","+SceneGraph.root.obj.m[3]+","+SceneGraph.root.obj.m[4]+","+SceneGraph.root.obj.m[5]+"];\n"+
+                    "smokeObj2.m[0] = smokeObj2.m[3] = 0.5;\n"+
+                    "smokeObj3.m[0] = 0.15;\nsmokeObj3.m[3] = 0.5;\n"+
+                    "smokeObj2.m[5] = " + cloud2.m[5] + ";\n"+
+                    "smokeObj3.m[5] = " + cloud3.m[5] + ";\n"+
+                    "smokeObj1.disp = smokeObj2.disp = smokeObj3.disp = " + cloud.disp + ";\n"+
+                    "smokeObj1.speed = " + cloud.speed + "\n"+
+                    "smokeObj3.speed = smokeObj2.speed = " + (cloud.speed-1) + ";\n"+
+                    "smokeObj1.shadow = smokeObj2.shadow = smokeObj3.shadow = " + cloud.shadow + ";\n"+
+                    "/*adicionar o nó da fumaça - ou outro nó desejado - no grafo de cena*/\n"+
+                    "var sn = SceneGraph.root.add(smokeNode);\n"+
+                    "sn.add(smokeObj1);\n"+
+                    "sn.add(smokeObj2);\n"+
+                    "sn.add(smokeObj3);\n";
+            
+                $('declaration').innerText = s;
+                $('code').innerText = t;
+            }
+        </script>
+
+        <style type="text/css">
+            ul.text input{ width:40px; }
+            .tbig{ width:100px; }
+            input{ cursor:pointer; }
+            .textarea{font-family:"Courier New", Courier, monospace}
+            #canvas{ background-image: url("chuva.jpg") }
+        </style>
+<img src="logo.png" onclick="window.close()">		
+    </head>
+    <body>
+        <div>
+            <fieldset>
+                <ul style="text-align:left; width:200px;float:left" class="text">
+                    <li> 
+                        <div>Nuvem</div>
+                        <ul>
+                            <li> <input type="text" value="30" id="quantidade" onchange="updateCloud()"><span>Nr pedaços</span></li>
+                            <li> <input type="text" id="altura" value="300" onchange="updateCloud()"><span>Altura nuvem</span></li>
+                            <li> <input type="text" id="largura" value="5" onchange="updateCloud()"><span>Largura base</span></li>
+                            <li> <input type="text" id="dispersao" value="0.003" onchange="updateCloud()"><span>Coef. Dispersao</span> </li>
+                            <li> <input type="text" id="rotacao" value="0" onchange="updateCloud()"><span>Rotação(graus)</span> </li>
+                            <li> <input type="text" id="escala" value="1" onchange="updateCloud()"><span>Escala</span> </li>
+                        </ul>
+                    </li>	
+                </ul>
+                <ul style="text-align:left; width:200px;float:left" class="text">
+                    <li style="list-style: none"> 
+                        <div>&nbsp;</div>
+                        <ul>
+                            <li><input type="text" value="2" id="velocidade" onchange="updateCloud()"><span>Velocidade</span></li>
+                            <li><input type="text" value="150" id="posx" onchange="updateCloud()"><span>Pos X</span></li>
+                            <li><input type="text" value="0" id="posy" onchange="updateCloud()"><span>Pos Y</span></li>
+                            <li>Esfumacado?<input type="checkbox" id="shadow" value="true" onchange="updateCloud()"></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul style="text-align:left; width:230px;float:left">
+                    <li><div>Cores</div>
+                        <ul>
+                            <li> <input class="tbig" type="text" id="fogcolor" value="rgb(190,190,190)" onchange="updateCloud()"><span>Cor 1</span> </li>
+                            <li> <input class="tbig" type="text" id="fogcolor2" value="rgb(170,170,170)" onchange="updateCloud()"><span>Cor 2</span> </li>
+                            <li> <input class="tbig" type="text" id="fogcolor3" value="rgb(65,65,65)" onchange="updateCloud()"><span>Cor 3</span> </li>
+                            <li><input type="radio" name="tipo" id="tipo0" value="-1" onchange="updateCloud()" checked>Pessoal</li>
+                            <li><input type="radio" name="tipo" id="tipo" value="0" onchange="updateCloud()">Fumaca</li>
+                            <li><input type="radio" name="tipo" id="tipo2" value="1" onchange="updateCloud()">Fogo</li>
+                            <li><input type="radio" name="tipo" id="tipo3" value="2" onchange="updateCloud()">Vapor</li>
+                        </ul>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+        <canvas  style="background-color: white; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="4" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="14" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>
+

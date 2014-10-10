@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Efeitos</title>
+        <script type="text/javascript" src="engine.js"></script> 
+        <script type="text/javascript" src="physics.js"></script>
+        <script type="text/javascript" src="core.js"></script>
+        <script type="text/javascript" src="collision.js"></script>
+        <script type="text/javascript" src="scenegraph.js"></script>
+        <script type="text/javascript" src="smile.js"></script>
+        <script type="text/javascript">
+            var canvas;
+            var escala = 1;
+            var translation = [0,0];
+            var smile = null;
+		
+            window.onload = function(){
+                var size = parseInt($('size').value);
+                var posx = parseInt($('posx').value);
+                var posy = parseInt($('posy').value);
+                var canvas = $('canvas');
+                canvas.width = 400;
+                canvas.height = 300;
+                
+                var smile = new Smile(1, "marota", "normal", '#F0F8FF');
+                smile.m = [size,0,0,size,  canvas.width*0.5 - 0.5, canvas.height*0.5 - 0.5];
+                SceneGraph.root.add(smile);    
+                Engine.init('canvas', 400, 300); 
+                Engine.run(); 
+            }
+			
+			
+            function getCheckedValue( groupName ) {
+                var radios = document.getElementsByName( groupName );
+                for( i = 0; i < radios.length; i++ ) {
+                    if( radios[i].checked ) {
+                        return radios[i].value;
+                    }
+                }
+                return null;
+            }
+			
+            function updateSmile()
+            { 
+                var smile = SceneGraph.root.children[0].obj;
+                smile.m[4]= Engine.canvas.width*0.5 - 0.5 + parseInt($('posx').value,10);
+                smile.m[5] = Engine.canvas.height*0.5 - 0.5  + parseInt($('posy').value,10);
+                smile.m[0] = smile.m[3] = parseInt($('size').value,10);
+                smile.setAnimation(getCheckedValue('boca'), getCheckedValue('olhos'));
+                smile.color = $('cor').value;
+				
+				
+                $('declaration').innerText = 
+                    "/* posx,posy, raio, animação boca, animação olhos*/\n"+
+                    "var smileObj = new Smile(1, '"+ getCheckedValue('boca') +"', '"+ getCheckedValue('olhos') +"','"+ smile.color +"');";
+				
+                $('code').innerText = 
+                      "smileObj.m = ["+smile.m[0]+",0,0,"+smile.m[3]+",  "+smile.m[4]+", "+smile.m[5]+"];\n"+
+                      "SceneGraph.root.add(smileObj);\n"+
+                      "/*Para setar atributos  novamente:\n smileObj.setAnimation('"+getCheckedValue('boca')+"', '"+getCheckedValue('olhos')+"');\n"+
+                      " smileObj.color = 'cor';*/";
+            }
+        </script>
+
+        <style type="text/css">
+            ul.text input{
+                width:60px;
+            }
+
+            li{
+                cursor:pointer;
+            }
+
+            .textarea{font-family:"Courier New", Courier, monospace}
+        </style>
+<img src="logo.png" onclick="window.close()">
+    </head>
+
+    <body>
+
+        <div>
+
+            <fieldset>
+                <ul style="text-align:left; width:160px;float:left">
+                    <li> 
+                        <div>Boca</div>
+                        <ul>
+                            <li><input type="radio" value="marota" name="boca" checked onchange="updateSmile()" ><span>Marota</span></li>
+                            <li><input type="radio" value="seria" name="boca" onchange="updateSmile()"><span>Séria</span></li>
+                            <li><input type="radio" value="triste" name="boca" onchange="updateSmile()"><span>Triste</span></li>
+                            <li><input type="radio" value="sorriso" name="boca" onchange="updateSmile()"><span>Sorridente</span></li>
+                        </ul>
+                    </li>	
+                </ul>
+
+                <ul style="text-align:left; width:160px;float:left">
+                    <li> 
+                        <div>Olhos</div>
+                        <ul>
+                            <li><input type="radio" value="normal" name="olhos" checked onchange="updateSmile()"><span>Normal</span></li>
+                            <li><input type="radio" value="triste" name="olhos" onchange="updateSmile()"><span>Triste</span></li>
+                            <li><input type="radio" value="bravo" name="olhos" onchange="updateSmile()"><span>Bravo</span></li>
+                            <li><input type="radio" value="pensativo" name="olhos" onchange="updateSmile()"><span>Pensativo</span></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul style="text-align:left; width:190px;float:left" class="text">
+                    <li> <input type="text" value="20" id="size" onchange="updateSmile()"><span> raio</span></li>
+                    <li> <input type="text" id="posx" value="0" onchange="updateSmile()"><span>posição x</span></li>
+                    <li> <input type="text" id="posy" value="0" onchange="updateSmile()"><span>posição y</span></li>
+                    <li> <input type="text" id="cor" value="#F0F8FF" onchange="updateSmile()"><span> cor do corpo </span> </li>
+                </ul>
+            </fieldset>
+        </div>
+        <canvas  style="background-color: white; border-style:outset; border-color:silver; float:left; margin-right:20px; margin-top:5px" id="canvas">
+        </canvas>
+        <div>
+            <div><label for="declaration">Declaração</label></div>
+            <textarea style="width:600px;" rows="2" id="declaration"></textarea>
+        </div>
+        <div>
+            <div><label for="code">Renderização</label></div>
+            <textarea style="width:600px;" rows="13" id="code"></textarea>
+        </div>
+        <span>FPS: </span><span id="fps"></span>
+    </body>
+</html>
+
